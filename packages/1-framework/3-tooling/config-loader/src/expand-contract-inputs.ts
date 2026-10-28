@@ -12,7 +12,8 @@ function resolveLiteral(entry: string): string {
 }
 
 function toGlobPattern(entry: string): string {
-  return entry.replace(/\\/g, '/');
+  const normalized = entry.replace(/\\/g, '/');
+  return normalized.replace(/^[a-z]:(?=\/)/i, (drive) => drive.toUpperCase());
 }
 
 /**

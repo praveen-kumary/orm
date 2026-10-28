@@ -155,6 +155,32 @@ describe('globContractInputMatching', () => {
     ).toBe('C:/app/prisma/**/*.prisma');
   });
 
+  it('matches regardless of Windows drive letter casing', () => {
+    expect(
+      globContractInputMatching(['C:/app/prisma/**/*.prisma'], 'c:\\app\\prisma\\contract.prisma'),
+    ).toBe('C:/app/prisma/**/*.prisma');
+
+    expect(
+      globContractInputMatching(['c:/app/prisma/**/*.prisma'], 'C:\\app\\prisma\\contract.prisma'),
+    ).toBe('c:/app/prisma/**/*.prisma');
+  });
+
+  it('matches regardless of Windows drive letter casing', () => {
+    expect(
+      globContractInputMatching(
+        ['C:/app/prisma/**/*.prisma'],
+        'c:\\app\\prisma\\contract.prisma',
+      ),
+    ).toBe('C:/app/prisma/**/*.prisma');
+
+    expect(
+      globContractInputMatching(
+        ['c:/app/prisma/**/*.prisma'],
+        'C:\\app\\prisma\\contract.prisma',
+      ),
+    ).toBe('c:/app/prisma/**/*.prisma');
+  });
+
   it('returns nothing for a path no glob input matches', () => {
     expect(
       globContractInputMatching(['/app/prisma/**/*.prisma'], '/app/printed/contract.prisma'),
