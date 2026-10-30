@@ -15,7 +15,9 @@ describe('PrismaBetterSqlite3Adapter', () => {
       if (sql === 'BEGIN' && shouldFail) {
         return {
           run: () => {
-            throw new Error('SQLITE_BUSY: database is locked')
+            const err = new Error('SQLITE_BUSY: database is locked')
+            ;(err as any).code = 'SQLITE_BUSY'
+            throw err
           },
         }
       }
@@ -23,7 +25,12 @@ describe('PrismaBetterSqlite3Adapter', () => {
     }) as any
 
     // First attempt fails with DriverAdapterError
-    await expect(adapter.startTransaction()).rejects.toThrow()
+    await expect(adapter.startTransaction()).rejects.toMatchObject({
+      name: 'DriverAdapterError',
+      cause: {
+        _tag: 'SocketTimeout',
+      },
+    })
 
     // Subsequent transaction must not hang awaiting mutex acquisition
     shouldFail = false
@@ -33,3 +40,4 @@ describe('PrismaBetterSqlite3Adapter', () => {
     await adapter.dispose()
   })
 })
+
